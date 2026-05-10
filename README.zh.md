@@ -88,6 +88,37 @@ cp -r . ~/.claude/plugins/cometix-hud/
 ```
 
 
+
+## 卸载
+
+### 方式一：通过 Claude Code 插件卸载
+
+```bash
+# 在 Claude Code 中运行
+/plugin uninstall cometix-hud
+/reload-plugins
+```
+
+### 方式二：手动卸载
+
+```bash
+# 1. 删除插件目录
+rm -rf ~/.claude/plugins/cometix-hud
+
+# 2. 清理缓存
+rm -rf ~/.claude/plugins/cache/*/cometix-hud
+
+# 3. 移除 settings.json 中的 statusLine 配置
+# 编辑 ~/.claude/settings.json，删除 "statusLine" 部分
+```
+
+### 清理全局链接（如果使用过 npm link）
+
+```bash
+npm unlink -g cometix-hud
+```
+
+
 ## 配置
 
 ### 快速配置
