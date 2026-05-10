@@ -48,12 +48,45 @@ Context █████░░░░░ 45% │ Usage ██░░░░░░░
 
 ### 方式一：Claude Code 插件（推荐）
 
-```
+```bash
+# 在 Claude Code 中运行
 /plugin marketplace add Aminmmmm/cometix-hud
 /plugin install cometix-hud
 /reload-plugins
 /cometix-hud:setup
 ```
+
+### 方式二：手动安装（开发版）
+
+```bash
+# 克隆仓库
+git clone https://github.com/Aminmmmm/cometix-hud.git
+cd cometix-hud
+
+# 安装依赖并构建
+npm ci
+npm run build
+
+# 链接到全局（可选，方便测试）
+npm link
+```
+
+然后在 `~/.claude/settings.json` 中添加：
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "cometix-hud"
+  }
+}
+```
+
+或者复制到插件目录：
+```bash
+mkdir -p ~/.claude/plugins/cometix-hud
+cp -r . ~/.claude/plugins/cometix-hud/
+```
+
 
 ## 配置
 
