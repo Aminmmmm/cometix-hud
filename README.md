@@ -46,12 +46,35 @@ Context █████░░░░░ 45% │ Usage ██░░░░░░░
 
 ## 安装
 
-### 方式一：Claude Code 插件（推荐）
+### 方式一：npm 安装（推荐）
 
 ```bash
-# 在 Claude Code 中运行
-/plugin install Aminmmmm/cometix-hud
-/cometix-hud:setup
+# 全局安装
+npm install -g cometix-hud
+
+# 或使用 yarn
+yarn global add cometix-hud
+
+# 或使用 pnpm
+pnpm add -g cometix-hud
+```
+
+国内用户可使用镜像加速：
+```bash
+npm install -g cometix-hud --registry https://registry.npmmirror.com
+```
+
+安装完成后，配置 Claude Code：
+
+编辑 `~/.claude/settings.json`，添加：
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "cometix-hud",
+    "padding": 0
+  }
+}
 ```
 
 ### 方式二：手动安装（开发版）
@@ -65,25 +88,11 @@ cd cometix-hud
 npm ci
 npm run build
 
-# 链接到全局（可选，方便测试）
+# 链接到全局
 npm link
 ```
 
-然后在 `~/.claude/settings.json` 中添加：
-```json
-{
-  "statusLine": {
-    "type": "command",
-    "command": "cometix-hud"
-  }
-}
-```
-
-或者复制到插件目录：
-```bash
-mkdir -p ~/.claude/plugins/cometix-hud
-cp -r . ~/.claude/plugins/cometix-hud/
-```
+然后同样在 `~/.claude/settings.json` 中添加 statusLine 配置。
 
 
 

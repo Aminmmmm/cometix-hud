@@ -8,7 +8,8 @@
     "dist/",
     "src/",
     "commands/",
-    ".claude-plugin/"
+    ".claude-plugin/",
+    "bin/"
   ],
   "scripts": {
     "build": "tsc",
@@ -43,5 +44,8 @@
   "homepage": "https://github.com/Aminmmmm/cometix-hud#readme",
   "bugs": {
     "url": "https://github.com/Aminmmmm/cometix-hud/issues"
+  },
+  "bin": {
+    "cometix-hud": "./bin/cometix-hud.mjs"
   }
 }
