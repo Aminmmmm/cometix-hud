@@ -1,0 +1,16 @@
+{
+  "name": "cometix-hud",
+  "description": "Fusion statusline for Claude Code — CCometixLine aesthetics + Claude HUD functionality. Nerd Font icons, Powerline layout, theme presets, tool/agent/todo tracking.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Amin"
+  },
+  "commands": [
+    "./commands/setup.md",
+    "./commands/configure.md"
+  ],
+  "homepage": "https://github.com/amin-jab/cometix-hud",
+  "repository": "https://github.com/amin-jab/cometix-hud",
+  "license": "MIT",
+  "keywords": ["hud", "statusline", "powerline", "nerd-font", "cometix", "context", "tools", "agents", "todos", "claude-code"]
+}
