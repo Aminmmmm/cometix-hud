@@ -118,6 +118,27 @@ rm -rf ~/.claude/plugins/cache/*/cometix-hud
 npm unlink -g cometix-hud
 ```
 
+### 方式三：一键卸载脚本（推荐）
+
+下载并运行一键卸载脚本，可同时卸载 CCometixLine、claude-hud、cometix-hud：
+
+```bash
+# 下载脚本
+curl -fsSL https://raw.githubusercontent.com/Aminmmmm/cometix-hud/main/scripts/uninstall-all.sh -o uninstall-all.sh
+
+# 运行脚本
+chmod +x uninstall-all.sh
+./uninstall-all.sh
+```
+
+或者直接运行：
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/Aminmmmm/cometix-hud/main/scripts/uninstall-all.sh)
+```
+
+
+
 
 ## 配置
 
