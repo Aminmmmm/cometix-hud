@@ -50,9 +50,7 @@ Context █████░░░░░ 45% │ Usage ██░░░░░░░
 
 ```bash
 # 在 Claude Code 中运行
-/plugin marketplace add Aminmmmm/cometix-hud
-/plugin install cometix-hud
-/reload-plugins
+/plugin install Aminmmmm/cometix-hud
 /cometix-hud:setup
 ```
 
@@ -96,7 +94,6 @@ cp -r . ~/.claude/plugins/cometix-hud/
 ```bash
 # 在 Claude Code 中运行
 /plugin uninstall cometix-hud
-/reload-plugins
 ```
 
 ### 方式二：手动卸载
