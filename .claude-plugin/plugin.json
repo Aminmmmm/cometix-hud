@@ -9,8 +9,8 @@
     "./commands/setup.md",
     "./commands/configure.md"
   ],
-  "homepage": "https://github.com/amin-jab/cometix-hud",
-  "repository": "https://github.com/amin-jab/cometix-hud",
+  "homepage": "https://github.com/Aminmmmm/cometix-hud",
+  "repository": "https://github.com/Aminmmmm/cometix-hud",
   "license": "MIT",
   "keywords": ["hud", "statusline", "powerline", "nerd-font", "cometix", "context", "tools", "agents", "todos", "claude-code"]
 }
