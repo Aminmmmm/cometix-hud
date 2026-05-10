@@ -124,23 +124,25 @@ npm unlink -g cometix-hud
 
 **卸载 cometix-hud：**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Aminmmmm/cometix-hud/main/scripts/uninstall-cometix-hud.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Aminmmmm/cometix-hud/main/scripts/uninstall-cometix-hud.sh | bash -s -- -y
 ```
 
 **卸载 claude-hud：**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Aminmmmm/cometix-hud/main/scripts/uninstall-claude-hud.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Aminmmmm/cometix-hud/main/scripts/uninstall-claude-hud.sh | bash -s -- -y
 ```
 
 **卸载 CCometixLine：**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Aminmmmm/cometix-hud/main/scripts/uninstall-ccometixline.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Aminmmmm/cometix-hud/main/scripts/uninstall-ccometixline.sh | bash -s -- -y
 ```
 
 **一键卸载全部：**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Aminmmmm/cometix-hud/main/scripts/uninstall-all.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Aminmmmm/cometix-hud/main/scripts/uninstall-all.sh | bash -s -- -y
 ```
+
+> 💡 `-y` 参数跳过确认提示。交互式运行时可省略。
 
 
 

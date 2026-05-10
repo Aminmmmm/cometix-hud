@@ -2,6 +2,11 @@
 # ============================================================
 # CCometixLine 卸载脚本
 # https://github.com/Haleclipse/CCometixLine
+# 
+# 使用方式：
+#   ./uninstall-ccometixline.sh        # 交互式
+#   ./uninstall-ccometixline.sh -y     # 跳过确认
+#   curl -fsSL .../uninstall-ccometixline.sh | bash -s -- -y
 # ============================================================
 
 set -e
@@ -16,16 +21,21 @@ info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 success() { echo -e "${GREEN}[✓]${NC} $1"; }
 warn() { echo -e "${YELLOW}[!]${NC} $1"; }
 
+CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+
 echo ""
 echo "=========================================="
 echo "  CCometixLine 卸载工具"
 echo "=========================================="
 echo ""
 
-read -p "确认卸载 CCometixLine？(y/N): " confirm
-if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-    echo "已取消卸载"
-    exit 0
+# 确认卸载（支持 -y 参数跳过）
+if [[ "$1" != "-y" ]]; then
+    read -p "确认卸载 CCometixLine？(y/N): " confirm < /dev/tty || confirm="n"
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+        echo "已取消卸载"
+        exit 0
+    fi
 fi
 
 echo ""
@@ -41,18 +51,15 @@ fi
 # 2. 检查 ccline 命令
 if command -v ccline >/dev/null 2>&1; then
     warn "ccline 命令仍然存在：$(which ccline)"
-    warn "可能需要重启终端或手动删除"
+    warn "可能需要重启终端"
 fi
 
-# 3. 清理配置（可选）
-CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+# 3. 清理配置
 if [ -f "$CLAUDE_DIR/settings.json" ]; then
     if grep -q '"statusLine"' "$CLAUDE_DIR/settings.json" 2>/dev/null; then
         info "检测到 statusLine 配置"
-        read -p "是否移除 settings.json 中的 statusLine 配置？(y/N): " remove_config
-        if [[ "$remove_config" =~ ^[Yy]$ ]]; then
-            if command -v python3 >/dev/null 2>&1; then
-                python3 -c "
+        if command -v python3 >/dev/null 2>&1; then
+            python3 -c "
 import json
 with open('$CLAUDE_DIR/settings.json', 'r') as f:
     config = json.load(f)
@@ -62,10 +69,9 @@ if 'statusLine' in config:
         json.dump(config, f, indent=2)
     print('已移除 statusLine 配置')
 "
-                success "settings.json 已清理"
-            else
-                warn "请手动编辑 $CLAUDE_DIR/settings.json 删除 statusLine"
-            fi
+            success "settings.json 已清理"
+        else
+            warn "请手动编辑 $CLAUDE_DIR/settings.json 删除 statusLine"
         fi
     fi
 fi

@@ -2,6 +2,11 @@
 # ============================================================
 # claude-hud 卸载脚本
 # https://github.com/jarrodwatts/claude-hud
+# 
+# 使用方式：
+#   ./uninstall-claude-hud.sh        # 交互式
+#   ./uninstall-claude-hud.sh -y     # 跳过确认
+#   curl -fsSL .../uninstall-claude-hud.sh | bash -s -- -y
 # ============================================================
 
 set -e
@@ -24,10 +29,13 @@ echo "  claude-hud 卸载工具"
 echo "=========================================="
 echo ""
 
-read -p "确认卸载 claude-hud？(y/N): " confirm
-if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-    echo "已取消卸载"
-    exit 0
+# 确认卸载（支持 -y 参数跳过）
+if [[ "$1" != "-y" ]]; then
+    read -p "确认卸载 claude-hud？(y/N): " confirm < /dev/tty || confirm="n"
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+        echo "已取消卸载"
+        exit 0
+    fi
 fi
 
 echo ""
@@ -35,18 +43,7 @@ echo ""
 # 1. 删除插件目录
 info "正在删除 claude-hud 插件..."
 
-PLUGIN_DIRS=(
-    "$CLAUDE_DIR/plugins/claude-hud"
-)
-
-# 遍历 cache 目录
-for dir in "$CLAUDE_DIR/plugins/cache"/*/claude-hud; do
-    if [ -d "$dir" ]; then
-        PLUGIN_DIRS+=("$dir")
-    fi
-done
-
-for dir in "${PLUGIN_DIRS[@]}"; do
+for dir in "$CLAUDE_DIR/plugins/claude-hud" "$CLAUDE_DIR/plugins/cache"/*/claude-hud; do
     if [ -d "$dir" ]; then
         rm -rf "$dir" && success "已删除 $dir"
     fi
@@ -67,8 +64,6 @@ if 'statusLine' in config:
     with open('$CLAUDE_DIR/settings.json', 'w') as f:
         json.dump(config, f, indent=2)
     print('已移除 statusLine 配置')
-else:
-    print('未找到 statusLine 配置')
 "
             success "settings.json 已清理"
         elif command -v jq >/dev/null 2>&1; then
@@ -100,14 +95,17 @@ REGISTRY_FILE="$CLAUDE_DIR/plugins/installed_plugins.json"
 if [ -f "$REGISTRY_FILE" ] && command -v python3 >/dev/null 2>&1; then
     python3 -c "
 import json
-with open('$REGISTRY_FILE', 'r') as f:
-    registry = json.load(f)
-plugins = registry.get('plugins', {})
-if 'claude-hud' in plugins:
-    del plugins['claude-hud']
-    with open('$REGISTRY_FILE', 'w') as f:
-        json.dump(registry, f, indent=2)
-    print('已从注册表移除 claude-hud')
+try:
+    with open('$REGISTRY_FILE', 'r') as f:
+        registry = json.load(f)
+    plugins = registry.get('plugins', {})
+    if 'claude-hud' in plugins:
+        del plugins['claude-hud']
+        with open('$REGISTRY_FILE', 'w') as f:
+            json.dump(registry, f, indent=2)
+        print('已从注册表移除 claude-hud')
+except:
+    pass
 " 2>/dev/null && success "插件注册表已更新"
 fi
 

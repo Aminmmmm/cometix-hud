@@ -2,24 +2,25 @@
 # ============================================================
 # 一键卸载 Claude Code 状态栏相关项目
 # 支持：CCometixLine、claude-hud、cometix-hud
+# 
+# 使用方式：
+#   ./uninstall-all.sh        # 交互式
+#   ./uninstall-all.sh -y     # 跳过确认
+#   curl -fsSL .../uninstall-all.sh | bash -s -- -y
 # ============================================================
 
 set -e
 
-# 颜色定义
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-# 打印带颜色的消息
 info() { echo -e "${BLUE}[INFO]${NC} $1"; }
 success() { echo -e "${GREEN}[✓]${NC} $1"; }
 warn() { echo -e "${YELLOW}[!]${NC} $1"; }
-error() { echo -e "${RED}[✗]${NC} $1"; }
 
-# Claude 配置目录
 CLAUDE_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 
 echo ""
@@ -33,47 +34,36 @@ echo "  2. claude-hud (Claude Code 插件)"
 echo "  3. cometix-hud (Claude Code 插件)"
 echo ""
 
-# 询问确认
-read -p "确认卸载？(y/N): " confirm
-if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
-    echo "已取消卸载"
-    exit 0
+# 确认卸载（支持 -y 参数跳过）
+if [[ "$1" != "-y" ]]; then
+    read -p "确认卸载全部？(y/N): " confirm < /dev/tty || confirm="n"
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+        echo "已取消卸载"
+        exit 0
+    fi
 fi
 
 echo ""
 
 # ============================================================
-# 1. 卸载 CCometixLine (npm 全局包)
+# 1. 卸载 CCometixLine
 # ============================================================
 info "正在卸载 CCometixLine..."
 
-# 检查是否安装
 if npm list -g @cometix/ccline >/dev/null 2>&1; then
     npm uninstall -g @cometix/ccline 2>/dev/null && success "已卸载 @cometix/ccline" || warn "卸载 @cometix/ccline 失败"
 else
     warn "@cometix/ccline 未安装，跳过"
 fi
 
-# 检查 ccline 命令
-if command -v ccline >/dev/null 2>&1; then
-    warn "ccline 命令仍然存在，可能需要手动删除"
-    which ccline
-fi
-
 echo ""
 
 # ============================================================
-# 2. 卸载 claude-hud (Claude Code 插件)
+# 2. 卸载 claude-hud
 # ============================================================
 info "正在卸载 claude-hud..."
 
-# 删除插件目录
-CLAUDE_HUD_DIRS=(
-    "$CLAUDE_DIR/plugins/claude-hud"
-    "$CLAUDE_DIR/plugins/cache"/*/claude-hud
-)
-
-for dir in "${CLAUDE_HUD_DIRS[@]}"; do
+for dir in "$CLAUDE_DIR/plugins/claude-hud" "$CLAUDE_DIR/plugins/cache"/*/claude-hud; do
     if [ -d "$dir" ]; then
         rm -rf "$dir" && success "已删除 $dir"
     fi
@@ -82,16 +72,11 @@ done
 echo ""
 
 # ============================================================
-# 3. 卸载 cometix-hud (Claude Code 插件)
+# 3. 卸载 cometix-hud
 # ============================================================
 info "正在卸载 cometix-hud..."
 
-COMETIX_HUD_DIRS=(
-    "$CLAUDE_DIR/plugins/cometix-hud"
-    "$CLAUDE_DIR/plugins/cache"/*/cometix-hud
-)
-
-for dir in "${COMETIX_HUD_DIRS[@]}"; do
+for dir in "$CLAUDE_DIR/plugins/cometix-hud" "$CLAUDE_DIR/plugins/cache"/*/cometix-hud; do
     if [ -d "$dir" ]; then
         rm -rf "$dir" && success "已删除 $dir"
     fi
@@ -100,59 +85,48 @@ done
 echo ""
 
 # ============================================================
-# 4. 清理 settings.json 中的 statusLine 配置
+# 4. 清理 settings.json
 # ============================================================
 info "正在清理 settings.json..."
 
-SETTINGS_FILE="$CLAUDE_DIR/settings.json"
-
-if [ -f "$SETTINGS_FILE" ]; then
-    # 检查是否有 statusLine 配置
-    if grep -q '"statusLine"' "$SETTINGS_FILE" 2>/dev/null; then
-        # 使用 python 或 jq 删除 statusLine
+if [ -f "$CLAUDE_DIR/settings.json" ]; then
+    if grep -q '"statusLine"' "$CLAUDE_DIR/settings.json" 2>/dev/null; then
         if command -v python3 >/dev/null 2>&1; then
             python3 -c "
 import json
-with open('$SETTINGS_FILE', 'r') as f:
+with open('$CLAUDE_DIR/settings.json', 'r') as f:
     config = json.load(f)
 if 'statusLine' in config:
     del config['statusLine']
-    with open('$SETTINGS_FILE', 'w') as f:
+    with open('$CLAUDE_DIR/settings.json', 'w') as f:
         json.dump(config, f, indent=2)
     print('已移除 statusLine 配置')
-else:
-    print('未找到 statusLine 配置')
-" && success "settings.json 已清理" || warn "清理 settings.json 失败"
+"
+            success "settings.json 已清理"
         elif command -v jq >/dev/null 2>&1; then
-            jq 'del(.statusLine)' "$SETTINGS_FILE" > "${SETTINGS_FILE}.tmp" && \
-            mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE" && \
+            jq 'del(.statusLine)' "$CLAUDE_DIR/settings.json" > "$CLAUDE_DIR/settings.json.tmp" && \
+            mv "$CLAUDE_DIR/settings.json.tmp" "$CLAUDE_DIR/settings.json" && \
             success "settings.json 已清理"
         else
-            warn "需要手动编辑 $SETTINGS_FILE 删除 statusLine 配置"
+            warn "请手动编辑 $CLAUDE_DIR/settings.json 删除 statusLine"
         fi
     else
         warn "settings.json 中未找到 statusLine 配置"
     fi
-else
-    warn "settings.json 不存在"
 fi
 
 echo ""
 
 # ============================================================
-# 5. 清理 npm 全局链接
+# 5. 清理全局链接
 # ============================================================
-info "正在清理 npm 全局链接..."
+info "正在清理全局链接..."
 
-# 检查并清理 cometix-hud 链接
-if npm list -g cometix-hud >/dev/null 2>&1; then
-    npm unlink -g cometix-hud 2>/dev/null && success "已取消 cometix-hud 全局链接"
-fi
-
-# 检查并清理 claude-hud 链接
-if npm list -g claude-hud >/dev/null 2>&1; then
-    npm unlink -g claude-hud 2>/dev/null && success "已取消 claude-hud 全局链接"
-fi
+for pkg in cometix-hud claude-hud; do
+    if npm list -g "$pkg" >/dev/null 2>&1; then
+        npm unlink -g "$pkg" 2>/dev/null && success "已取消 $pkg 全局链接"
+    fi
+done
 
 echo ""
 
@@ -161,17 +135,16 @@ echo ""
 # ============================================================
 info "正在清理临时文件..."
 
-TEMP_DIRS=(
-    "$CLAUDE_DIR/plugins/cache/temp_local_"*
-    "/tmp/claude-hud-fusion"
-    "/tmp/cometix-hud"
-    "/tmp/CCometixLine"
-    "/tmp/claude-hud"
-)
-
-for dir in "${TEMP_DIRS[@]}"; do
+for dir in /tmp/cometix-hud /tmp/claude-hud /tmp/CCometixLine /tmp/claude-hud-fusion; do
     if [ -d "$dir" ]; then
-        rm -rf "$dir" 2>/dev/null && success "已删除 $dir"
+        rm -rf "$dir" && success "已删除 $dir"
+    fi
+done
+
+# 清理 temp 文件
+for dir in "$CLAUDE_DIR/plugins/cache/temp_local_"*; do
+    if [ -d "$dir" ]; then
+        rm -rf "$dir" && success "已删除 $dir"
     fi
 done
 
@@ -183,14 +156,14 @@ echo ""
 REGISTRY_FILE="$CLAUDE_DIR/plugins/installed_plugins.json"
 
 if [ -f "$REGISTRY_FILE" ]; then
-    info "是否重置插件注册表？"
-    warn "这将删除所有已安装插件的记录！"
-    read -p "重置注册表？(y/N): " reset_registry
-    if [[ "$reset_registry" =~ ^[Yy]$ ]]; then
-        echo '{"version": 2, "plugins": {}}' > "$REGISTRY_FILE" && \
-        success "插件注册表已重置"
-    else
-        info "跳过重置注册表"
+    if [[ "$1" != "-y" ]]; then
+        info "是否重置插件注册表？"
+        warn "这将删除所有已安装插件的记录！"
+        read -p "重置注册表？(y/N): " reset_registry < /dev/tty || reset_registry="n"
+        if [[ "$reset_registry" =~ ^[Yy]$ ]]; then
+            echo '{"version": 2, "plugins": {}}' > "$REGISTRY_FILE" && \
+            success "插件注册表已重置"
+        fi
     fi
 fi
 
