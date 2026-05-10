@@ -49,26 +49,10 @@ Context █████░░░░░ 45% │ Usage ██░░░░░░░
 ### 方式一：Claude Code 插件（推荐）
 
 ```
-/plugin marketplace add amin-jab/cometix-hud
+/plugin marketplace add Aminmmmm/cometix-hud
 /plugin install cometix-hud
 /reload-plugins
 /cometix-hud:setup
-```
-
-### 方式二：npm
-
-```bash
-npm install -g cometix-hud
-```
-
-然后在 `~/.claude/settings.json` 中添加:
-```json
-{
-  "statusLine": {
-    "type": "command",
-    "command": "cometix-hud"
-  }
-}
 ```
 
 ## 配置
@@ -153,7 +137,7 @@ npm install -g cometix-hud
 ## 开发
 
 ```bash
-git clone https://github.com/amin-jab/cometix-hud
+git clone https://github.com/Aminmmmm/cometix-hud
 cd cometix-hud
 npm ci && npm run build
 npm test
