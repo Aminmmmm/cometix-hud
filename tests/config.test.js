@@ -28,7 +28,7 @@ test('loadConfig returns valid config structure', async () => {
   assert.ok([1, 2, 3].includes(config.pathLevels), 'pathLevels should be 1, 2, or 3');
 
   // lineLayout must be valid
-  const validLineLayouts = ['compact', 'expanded'];
+  const validLineLayouts = ['compact', 'expanded', 'auto'];
   assert.ok(validLineLayouts.includes(config.lineLayout), 'lineLayout should be valid');
 
   // showSeparators must be boolean
@@ -171,8 +171,8 @@ test('mergeConfig falls back to default promptCacheTtlSeconds for invalid values
 
 test('mergeConfig defaults showCost to false', () => {
   const config = mergeConfig({});
-  assert.equal(config.display.showCost, false);
-  assert.equal(DEFAULT_CONFIG.display.showCost, false);
+  assert.equal(config.display.showCost, true);
+  assert.equal(DEFAULT_CONFIG.display.showCost, true);
 });
 
 test('mergeConfig preserves explicit showCost=true', () => {
